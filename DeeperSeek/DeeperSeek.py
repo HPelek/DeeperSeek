@@ -24,8 +24,10 @@ class DeepSeek:
         chat_id: Optional[str] = None,
         headless: bool = True,
         verbose: bool = False,
-        chrome_args: list = [],
-        attempt_cf_bypass: bool = True
+        chrome_args: Optional[list] = None,
+        attempt_cf_bypass: bool = True,
+        include_search: bool = True,
+        include_deepthink: bool = True
     ) -> None:
         """Initializes the DeepSeek object.
 
@@ -43,10 +45,14 @@ class DeepSeek:
             Whether to run the browser in headless mode.
         verbose: bool
             Whether to log the actions.
-        chrome_args: list
+        chrome_args: Optional[list]
             The arguments to pass to the Chrome browser.
         attempt_cf_bypass: bool
             Whether to attempt to bypass the Cloudflare protection.
+        include_search: bool
+            Whether to include search results in the response object.
+        include_deepthink: bool
+            Whether to include deepthink information in the response object.
 
         Raises
         ---------
@@ -62,8 +68,10 @@ class DeepSeek:
         self._chat_id = chat_id
         self._headless = headless
         self._verbose = verbose
-        self._chrome_args = chrome_args
+        self._chrome_args = chrome_args or []
         self._attempt_cf_bypass = attempt_cf_bypass
+        self.include_search = include_search
+        self.include_deepthink = include_deepthink
 
         self._deepthink_enabled = False
         self._search_enabled = False
@@ -435,7 +443,7 @@ class DeepSeek:
         """Resets the chat by clicking the reset button."""
         reset_chat_button = await self.browser.main_tab.select(DSS.reset_chat_button_css)
         await reset_chat_button.click()
-        self.chat_id = ""
+        self._chat_id = ""
         self.logger.debug("Chat reset!")
     
     async def logout(self) -> None:
